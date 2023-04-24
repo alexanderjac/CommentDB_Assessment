@@ -165,6 +165,7 @@ class Solution:
         conn.close()
 
 if __name__ == "__main__":
+    
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
     host = config['host']
