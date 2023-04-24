@@ -55,7 +55,7 @@ solution.create_table(table_name="mytable", columns=columns)
 
 This method is used internally by the load_comment_text and load_comment_info methods to create tables in the MySQL database for loading data from CSV and JSON files.
 
-# Note
+## Note
 The Solution class assumes that the CSV files have two columns named "h_id" and "message", and the JSON files have a specific structure with "h_id", "posts", and "comments" fields. If your data has a different structure, you may need to modify the code accordingly.
 
 Also, please make sure to handle any exceptions or errors that may occur during the execution of the methods, such as invalid file paths, missing columns, or database connection errors, to ensure robustness of your application.
