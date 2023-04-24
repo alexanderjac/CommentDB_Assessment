@@ -5,6 +5,10 @@ import pandas as pd
 import re
 from datetime import datetime
 import pytz
+import logging
+
+logging.basicConfig(filename='etl.log', level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class Solution:
@@ -110,6 +114,7 @@ class Solution:
                                                                                     "comment_count": 0})], ignore_index=True)
                         except json.JSONDecodeError:
                             print(f"Error parsing JSON in file: {file_path}")
+                            logging.error(f"Error parsing JSON in file: {file_path}", f"An error occurred while loading comment text: {json.JSONDecodeError}")
                             continue
 
         df_combined['created_time'] = pd.to_datetime(df_combined['created_time'])  # Convert created_time column to datetime data type
@@ -160,13 +165,15 @@ class Solution:
         conn.close()
 
 if __name__ == "__main__":
-    comment_txt_path ='/Users/jacksonalexander/Documents/COOP & Internships/Interview logs/Paramount/Assignment/Files/comment_text'
-    comment_info_path ='/Users/jacksonalexander/Documents/COOP & Internships/Interview logs/Paramount/Assignment/Files/comment_info_jsonl'
-    post_meta_path ='/Users/jacksonalexander/Documents/COOP & Internships/Interview logs/Paramount/Assignment/Files/post_meta'
-    host='Jacksons-MacBook-Pro.local'
-    user='root'
-    password='paste_password_here'
-    database='CommentDB'
+    with open('config.json', 'r') as config_file:
+        config = json.load(config_file)
+    host = config['host']
+    user = config['user']
+    password = config['password']
+    database = config['database']
+    comment_txt_path = config['comment_txt_path']
+    comment_info_path = config['comment_info_path']
+    post_meta_path = config['post_meta_path']
     sol = Solution(host, user, password, database)
 
     # Load comment text data into MySQL
