@@ -76,7 +76,10 @@ class Solution:
         conn.close()
     
 
-    def load_comment_info(self, folder_path):
+        
+
+    def json_parse(self, folder_path):
+
         # Create an empty DataFrame to store the normalized data
         df_combined = pd.DataFrame()
 
@@ -118,6 +121,10 @@ class Solution:
                             continue
 
         df_combined['created_time'] = pd.to_datetime(df_combined['created_time'])  # Convert created_time column to datetime data type
+        df_combined['created_time'] = df_combined['created_time'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S')) # Convert created_time to string representation of timestamp
+        return df_combined
+    def load_comment_info(self, folder_path):
+        
 
         # Define column names and data types for the database table
         columns = [("post_id", "LONGTEXT"), ("comment_id", "LONGTEXT"),("created_time", "DATETIME"),("like_count", "INT"),("comment_count", "INT")]
@@ -125,11 +132,10 @@ class Solution:
         self.create_table(table_name, columns)  # Create the table in the database
         conn = self.create_db_connection()
         cursor = conn.cursor()
-
-        df_combined['created_time'] = df_combined['created_time'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S')) # Convert created_time to string representation of timestamp
-
+        json_dataframe = self.json_parse( folder_path)
+        
         # Insert data into the database table
-        df_combined.apply(lambda row: cursor.execute("INSERT INTO {} (post_id, comment_id, created_time, like_count, comment_count) VALUES (%s, %s, %s, %s, %s)".format(table_name), (row['post_id'], row['comment_id'], row['created_time'], row['like_count'], row['comment_count'])), axis=1)
+        json_dataframe.apply(lambda row: cursor.execute("INSERT INTO {} (post_id, comment_id, created_time, like_count, comment_count) VALUES (%s, %s, %s, %s, %s)".format(table_name), (row['post_id'], row['comment_id'], row['created_time'], row['like_count'], row['comment_count'])), axis=1)
         conn.commit()
         cursor.close()
         conn.close()
@@ -165,7 +171,6 @@ class Solution:
         conn.close()
 
 if __name__ == "__main__":
-    
     with open('config.json', 'r') as config_file:
         config = json.load(config_file)
     host = config['host']
