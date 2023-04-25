@@ -7,6 +7,7 @@ The Solution class is a Python class that provides methods for loading data from
 ## Dependencies
 The following libraries are required to use the Solution class:
 
+
 json
 mysql.connector
 os
