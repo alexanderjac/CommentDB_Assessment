@@ -71,17 +71,30 @@ class Solution:
                 df.apply(lambda row: cursor.execute("INSERT INTO {} (h_id, message) VALUES (%s, %s)".format(table_name), (row['h_id'], row['message'])), axis=1)
 
                 # Commit the transaction
-                conn.commit()
+        conn.commit()
         cursor.close()
         conn.close()
     
 
         
 
-    def json_parse(self, folder_path):
-
-        # Create an empty DataFrame to store the normalized data
+    def load_comment_info(self, folder_path):
+    # Create an empty DataFrame to store the normalized data
         df_combined = pd.DataFrame()
+
+        def load_comments(post_data, comments_data, df):
+            # Normalize comments data and append to combined DataFrame
+            if "comments" in comments_data:
+                comments = comments_data["comments"]["data"]
+                for comment in comments:
+                    comment_data = {"post_id": post_data["post_id"],
+                                    "comment_id": comment["h_id"],
+                                    "created_time": comment.get("created_time", datetime(1970, 1, 16, 0, 51, 52, tzinfo=pytz.utc)),
+                                    "like_count": max(comment.get("up_likes", 0), comment.get("like_count", 0)),
+                                    "comment_count": comment.get("comment_count", 0)}
+                    df = pd.concat([df, pd.json_normalize(comment_data)], ignore_index=True)
+                    df = load_comments(post_data, comment, df)
+            return df
 
         for file_name in os.listdir(folder_path):
             if file_name.endswith(".json"):
@@ -99,43 +112,32 @@ class Solution:
                                                 "created_time": post.get("created_time", datetime(1970, 1, 16, 0, 51, 52, tzinfo=pytz.utc)),
                                                 "like_count": max(post.get("up_likes", 0), post.get("like_count", 0)),
                                                 "comment_count": post.get("comment_count", 0)}
-                                    # Normalize comments data and append to combined DataFrame
-                                    if "comments" in post:
-                                        comments = post["comments"]["data"]
-                                        for comment in comments:
-                                            comment_data = {"post_id": post["h_id"],
-                                                            "comment_id": comment["h_id"],
-                                                            "created_time": comment.get("created_time", datetime(1970, 1, 16, 0, 51, 52, tzinfo=pytz.utc)),
-                                                            "like_count": max(comment.get("up_likes", 0), comment.get("like_count", 0)),
-                                                            "comment_count": comment.get("comment_count", 0)}
-                                            df_combined = pd.concat([df_combined, pd.json_normalize(comment_data)], ignore_index=True)
                                     df_combined = pd.concat([df_combined, pd.json_normalize(post_data)], ignore_index=True)
+                                    df_combined = load_comments(post_data, post, df_combined)
                             else:
                                 df_combined = pd.concat([df_combined, pd.json_normalize({"post_id": post_id,
-                                                                                    "created_time": datetime(1970, 1, 16, 0, 51, 52, tzinfo=pytz.utc),
-                                                                                    "like_count": 0,
-                                                                                    "comment_count": 0})], ignore_index=True)
+                                                                                        "created_time": datetime(1970, 1, 16, 0, 51, 52, tzinfo=pytz.utc),
+                                                                                        "like_count": 0,
+                                                                                        "comment_count": 0})], ignore_index=True)
                         except json.JSONDecodeError:
                             print(f"Error parsing JSON in file: {file_path}")
                             logging.error(f"Error parsing JSON in file: {file_path}", f"An error occurred while loading comment text: {json.JSONDecodeError}")
                             continue
 
+        # Drop duplicates based on the "post_id", "created_time", "like_count", "comment_count" columns, keeping the row with highest values
+        df_combined = df_combined.sort_values(by=["created_time", "like_count", "comment_count"], ascending=False)
+        df_combined.drop_duplicates(subset=["post_id", "created_time", "like_count", "comment_count"], keep="first", inplace=True)
+
+        # return df_combined
         df_combined['created_time'] = pd.to_datetime(df_combined['created_time'])  # Convert created_time column to datetime data type
         df_combined['created_time'] = df_combined['created_time'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S')) # Convert created_time to string representation of timestamp
-        return df_combined
-    def load_comment_info(self, folder_path):
-        
-
-        # Define column names and data types for the database table
         columns = [("post_id", "LONGTEXT"), ("comment_id", "LONGTEXT"),("created_time", "DATETIME"),("like_count", "INT"),("comment_count", "INT")]
         table_name = "comment_info"
         self.create_table(table_name, columns)  # Create the table in the database
         conn = self.create_db_connection()
         cursor = conn.cursor()
-        json_dataframe = self.json_parse( folder_path)
-        
         # Insert data into the database table
-        json_dataframe.apply(lambda row: cursor.execute("INSERT INTO {} (post_id, comment_id, created_time, like_count, comment_count) VALUES (%s, %s, %s, %s, %s)".format(table_name), (row['post_id'], row['comment_id'], row['created_time'], row['like_count'], row['comment_count'])), axis=1)
+        df_combined.apply(lambda row: cursor.execute("INSERT INTO {} (post_id, comment_id, created_time, like_count, comment_count) VALUES (%s, %s, %s, %s, %s)".format(table_name), (row['post_id'], row['comment_id'], row['created_time'], row['like_count'], row['comment_count'])), axis=1)
         conn.commit()
         cursor.close()
         conn.close()
@@ -157,7 +159,6 @@ class Solution:
                 # Concatenate the temporary dataframe with the merged dataframe
                 merged_df = pd.concat([merged_df, temp_df], ignore_index=True)
         merged_df['created_time'] = pd.to_datetime(merged_df['created_time'])  # Convert created_time column to datetime data type
-
         conn = self.create_db_connection()
         cursor = conn.cursor()
 
