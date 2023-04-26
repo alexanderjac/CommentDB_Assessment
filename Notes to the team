@@ -1,7 +1,13 @@
 Notes:
 
 *Why I chose MYSQL*
-I chose MySQL as the database for this assignment because I encountered compatibility issues with setting up PostgreSQL on my Mac M1 system and installing the psycopg2 library. Due to these limitations, I opted for MySQL as an alternative database management system that is compatible with my system. MySQL is a popular and widely used open-source relational database management system known for its stability, performance, and ease of use. It has a large community of users and developers, which means that there are plenty of resources and documentation available for troubleshooting and support. MySQL also offers robust features for handling large datasets and complex queries, making it suitable for handling the simulated data from the online discussion community in this assignment. Overall, I chose MySQL as my database of choice for this assignment due to its compatibility with my system and its reputation as a reliable and efficient database management system.
+I chose MySQL as the database for this assignment because I encountered compatibility issues with setting up PostgreSQL on my Mac M1 system and 
+installing the psycopg2 library. Due to these limitations, I opted for MySQL as an alternative database management system that is compatible with my 
+system. MySQL is a popular and widely used open-source relational database management system known for its stability, performance, and ease of use. 
+It has a large community of users and developers, which means that there are plenty of resources and documentation available for troubleshooting and 
+support. MySQL also offers robust features for handling large datasets and complex queries, making it suitable for handling the simulated data from 
+the online discussion community in this assignment. Overall, I chose MySQL as my database of choice for this assignment due to its compatibility with 
+my system and its reputation as a reliable and efficient database management system.
 
 * Discussion Question *
 Discussion question is added as a file named Discussion Question
