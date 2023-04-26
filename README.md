@@ -43,6 +43,7 @@ The tool logs debugging information to a file named etl.log using the logging mo
 Please make sure to update the logging.basicConfig method with the appropriate log level and log format as per your requirements.
 
 #### JSON Structure
+
 -- h_id : string (nullable = true)
 -- posts: struct (nullable = true)
 	-- data: array (nullable = true)
