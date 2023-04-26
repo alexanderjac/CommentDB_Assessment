@@ -8,18 +8,14 @@ The Solution class is a Python class that provides methods for loading data from
 #### Prerequisites
 Before running the tool, make sure you have the following software installed:
 
-Python 3
-
-MySQL
+Python 3, MySQL
 
 Required Python libraries: json, mysql.connector, os, pandas, re, datetime, pytz, logging
-
-Setup
 
 Clone this repository to your local machine.
 Create a MySQL database and provide the database details (host, user, password, and database name) when initializing the Solution class in the etl.py file.
 Usage
-Import the Solution class from the etl.py file in your Python script.
+
 Initialize an instance of the Solution class with the required database details.
 Use the various methods provided by the Solution class to load data into the MySQL database.
 
