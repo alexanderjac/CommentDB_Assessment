@@ -48,18 +48,20 @@ Please make sure to update the logging.basicConfig method with the appropriate l
 
 ## How to Run the Code:
 
-Install the required dependencies: This code uses the following Python packages: json, mysql.connector, os, pandas, re, datetime, pytz, and logging. Make sure these packages are installed in your Python environment. If not, you can install them using a package manager such as pip or conda.
+1. Install the required dependencies:
 
-Set up MySQL Database: Before running the code, you need to have a MySQL database set up with the necessary credentials (host, user, password, and database name) that match the parameters used in the Solution class constructor.
+2. Set up MySQL Database: Before running the code, you need to have a MySQL database set up with the necessary credentials (host, user, password, and database name) that match the parameters used in the Solution class constructor.
 
-Import the Code: Save the code to a Python file with a .py extension, and then import it into your Python script or interactive environment.
+3. Import the Code: Save the code to a Python file with a .py extension, and then import it into your Python script or interactive environment.
 
-Create an Instance of the Solution Class: Create an instance of the Solution class by calling the constructor with the appropriate parameters for your MySQL database connection.
+4. Create an Instance of the Solution Class: Create an instance of the Solution class by calling the constructor with the appropriate parameters for your MySQL database connection.
 
- 
-my_solution = Solution(host="your_host", user="your_user", password="your_password", database="your_database")
-Replace "your_host", "your_user", "your_password", and "your_database" with your actual MySQL database credentials.
+5. my_solution = Solution(host="your_host", user="your_user", password="your_password", database="your_database")
+   Replace "your_host", "your_user", "your_password", and "your_database" with your actual MySQL database credentials or read it through a config.json file where setup the host, user, password and the database in a key_value pair.
 
+6. Finally run the solution.py
+
+### Implementation of each methods
 Load Comment Text Data: Call the load_comment_text() method on the my_solution object, passing in the path to the directory containing the CSV files of comment text data as an argument. This method will create a table in the MySQL database (if it doesn't exist) and load the CSV data into the table.
   
 my_solution.load_comment_text("path/to/comment_txt_directory")
