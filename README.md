@@ -2,59 +2,102 @@
 
 ## Solution Class ReadMe
 
-The Solution class is a Python class that provides methods for loading data from CSV and JSON files into a MySQL database. The class takes in connection details for the MySQL database (host, user, password, and database name) as input during initialization.
-
-## Dependencies
-The following libraries are required to use the Solution class:
+The Solution class is a Python class that provides methods for loading data from CSV, JSON, Parquet files into a MySQL database. The class takes in connection details for the MySQL database (host, user, password, and database name) as input during initialization.
 
 
-json
-mysql.connector
-os
-pandas
-re
-datetime
-pytz
+#### Prerequisites
+Before running the tool, make sure you have the following software installed:
+
+Python 3
+MySQL
+Required Python libraries: json, mysql.connector, os, pandas, re, datetime, pytz, logging
+Setup
+Clone this repository to your local machine.
+Create a MySQL database and provide the database details (host, user, password, and database name) when initializing the Solution class in the etl.py file.
 Usage
+Import the Solution class from the etl.py file in your Python script.
+Initialize an instance of the Solution class with the required database details.
+Use the various methods provided by the Solution class to load data into the MySQL database.
 
-## Initialization
-To use the Solution class, you need to create an instance of the class by passing in the connection details for the MySQL database during initialization, like this:
+Run the below code to set up the dependent libraries
 
-### python
-solution = Solution(host="localhost", user="root", password="password", database="mydb")
-
-Make sure to replace the values for host, user, password, and database with the appropriate values for your MySQL database.
-
+pip install -r requirements.txt
 ## Methods
-The Solution class has the following methods:
+The Solution class provides the following methods:
 
-### load_comment_text
-The load_comment_text method allows you to load data from CSV files into the MySQL database. You need to pass in the path to the directory containing the CSV files as an argument, like this:
+create_db_connection()
+This method creates a MySQL database connection and returns a mysql.connector.connection.MySQLConnection object.
 
-### python
-solution.load_comment_text(comment_txt_path="/path/to/csv/files")
+create_table(table_name, columns)
+This method creates a table in the MySQL database with the given table name and column definitions. The table_name parameter should be a string representing the name of the table, and the columns parameter should be a list of tuples, where each tuple contains two values: the name of the column and its data type.
 
-The method will create a table called "comment_text" in the MySQL database (if it doesn't already exist), and then load the data from the CSV files into this table.
+load_comment_text(comment_txt_path)
+This method loads data from CSV files in the specified directory into the MySQL database. The comment_txt_path parameter should be a string representing the path to the directory containing the CSV files. The data is loaded into a table named comment_text with columns h_id and message.
 
-## load_comment_info
-The load_comment_info method allows you to load data from JSON files into the MySQL database. You need to pass in the path to the directory containing the JSON files as an argument, like this:
+load_comment_info(folder_path)
+This method loads data from JSON files in the specified directory into the MySQL database. The folder_path parameter should be a string representing the path to the directory containing the JSON files. The data is loaded into tables named comment_info and comment_info_comments with columns post_id, comment_id, created_time, like_count, and comment_count.
 
-### python
-solution.load_comment_info(folder_path="/path/to/json/files")
+Logging
+The tool logs debugging information to a file named etl.log using the logging module. You can check this log file for any errors or debugging information related to the ETL process.
 
-The method will create a table called "comment_info" in the MySQL database (if it doesn't already exist), and then load the data from the JSON files into this table.
+Please make sure to update the logging.basicConfig method with the appropriate log level and log format as per your requirements.
 
-## create_db_connection
-The create_db_connection method creates a MySQL database connection and returns a mysql.connector.connection.MySQLConnection object. You can use this method to establish a connection to the MySQL database if you need to perform any other operations that are not provided by the Solution class.
+#### JSON Structure
+-- h_id : string (nullable = true)
+-- posts: struct (nullable = true)
+	-- data: array (nullable = true)
+		-- element: struct (containsNull = true)
+			-- comments: struct (nullable = true)
+				-- data: array (nullable = true)
+					-- element: struct (containsNull = true)
+						-- comment_count: long (nullable = true)
+						-- comments: struct (nullable = true)
+							-- data: array (nullable = true)
+								-- element: struct (containsNull = true)
+									-- comment_count: long (nullable = true)
+									-- created_time: string (nullable = true)
+									-- h_id: string (nullable = true)
+									-- parent: struct (nullable = true)
+										-- h_id: string (nullable = true)
+									-- up_likes: long (nullable = true)
+						-- created-time: string (nullable = true)
+						-- h_id: string (nullable = true)
+						-- up_likes: long (nullable = true)
+			-- h_id: string (nullable = true)
 
-## create_table
-The create_table method allows you to create a table in the MySQL database. You need to pass in the table name and the column definitions as arguments. The column definitions should be provided as a list of tuples, where each tuple contains the column name and the data type, like this:
+## How to Run the Code:
 
-### python
-columns = [("column1", "data_type1"), ("column2", "data_type2"), ...]
-solution.create_table(table_name="mytable", columns=columns)
+Install the required dependencies: This code uses the following Python packages: json, mysql.connector, os, pandas, re, datetime, pytz, and logging. Make sure these packages are installed in your Python environment. If not, you can install them using a package manager such as pip or conda.
 
-This method is used internally by the load_comment_text and load_comment_info methods to create tables in the MySQL database for loading data from CSV and JSON files.
+Set up MySQL Database: Before running the code, you need to have a MySQL database set up with the necessary credentials (host, user, password, and database name) that match the parameters used in the Solution class constructor.
+
+Import the Code: Save the code to a Python file with a .py extension, and then import it into your Python script or interactive environment.
+
+Create an Instance of the Solution Class: Create an instance of the Solution class by calling the constructor with the appropriate parameters for your MySQL database connection.
+
+ 
+my_solution = Solution(host="your_host", user="your_user", password="your_password", database="your_database")
+Replace "your_host", "your_user", "your_password", and "your_database" with your actual MySQL database credentials.
+
+Load Comment Text Data: Call the load_comment_text() method on the my_solution object, passing in the path to the directory containing the CSV files of comment text data as an argument. This method will create a table in the MySQL database (if it doesn't exist) and load the CSV data into the table.
+  
+my_solution.load_comment_text("path/to/comment_txt_directory")
+Replace "path/to/comment_txt_directory" with the actual path to the directory containing the CSV files of comment text data.
+
+Load Comment Info Data: Call the load_comment_info() method on the my_solution object, passing in the path to the directory containing the JSON files of comment info data as an argument. This method will create a table in the MySQL database (if it doesn't exist) and load the JSON data into the table.
+ 
+my_solution.load_comment_info("path/to/comment_info_directory")
+Replace "path/to/comment_info_directory" with the actual path to the directory containing the JSON files of comment info data.
+
+Note: The code in the load_comment_info() method assumes that the JSON files contain data in a specific format with nested comments data. Make sure your JSON files follow this format for the code to work correctly.
+
+Load post meta Data: Call the load_post_meta() method on the my_solution object, passing in the path to the directory containing the parquet files of comment info data as an argument. This method will create a table in the MySQL database (if it doesn't exist) and load the parquet data into the table.
+ 
+my_solution.load_comment_info("path/to/post_meta_directory")
+Replace "path/to/post_meta_directory" with the actual path to the directory containing the parquet files of post_meta data.
+
+
+View Logs: The code is configured to log debug-level messages to a file named etl.log in the same directory where the code is executed. You can view the logs in this file to check for any errors or debug information related to the data loading process.
 
 ## Note
 The Solution class assumes that the CSV files have two columns named "h_id" and "message", and the JSON files have a specific structure with "h_id", "posts", and "comments" fields. If your data has a different structure, you may need to modify the code accordingly.
