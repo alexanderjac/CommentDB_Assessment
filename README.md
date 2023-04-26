@@ -44,27 +44,7 @@ Please make sure to update the logging.basicConfig method with the appropriate l
 
 #### JSON Structure
 
--- h_id : string (nullable = true)
--- posts: struct (nullable = true)
-	-- data: array (nullable = true)
-		-- element: struct (containsNull = true)
-			-- comments: struct (nullable = true)
-				-- data: array (nullable = true)
-					-- element: struct (containsNull = true)
-						-- comment_count: long (nullable = true)
-						-- comments: struct (nullable = true)
-							-- data: array (nullable = true)
-								-- element: struct (containsNull = true)
-									-- comment_count: long (nullable = true)
-									-- created_time: string (nullable = true)
-									-- h_id: string (nullable = true)
-									-- parent: struct (nullable = true)
-										-- h_id: string (nullable = true)
-									-- up_likes: long (nullable = true)
-						-- created-time: string (nullable = true)
-						-- h_id: string (nullable = true)
-						-- up_likes: long (nullable = true)
-			-- h_id: string (nullable = true)
+![image](https://user-images.githubusercontent.com/90269638/234447187-6521c87e-d3bd-4fc5-8543-c5a543a22c5a.png)
 
 ## How to Run the Code:
 
