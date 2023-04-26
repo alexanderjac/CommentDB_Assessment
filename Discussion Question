@@ -1,42 +1,52 @@
 1. If each dataset was 100 GB instead of less than 100 MB per dataset like in the assignment, handling processing at this scale would require a different approach.
+   One option would be to use big data processing frameworks like Apache Spark or PySpark, which are designed to handle large-scale data processing efficiently. 
+   These frameworks can handle distributed processing across multiple nodes, allowing for parallel processing of large datasets. I would use a workflow management 
+   tool like Flyte or Apache Airflow as the orchestrator to manage the workflow and dependencies between different processing steps. For processing Parquet files 
+   and JSON data, I would use a Parquet library such as Pyarrow in Python to read and extract the data from the Parquet files. Pyarrow provides efficient columnar 
+   storage and supports parallel processing, making it suitable for large datasets.
 
-    One option would be to use big data processing frameworks like Apache Spark or PySpark, which are designed to handle large-scale data processing efficiently. These frameworks can handle distributed processing across multiple nodes, allowing for parallel processing of large datasets. I would use a workflow management tool like Flyte or Apache Airflow as the orchestrator to manage the workflow and dependencies between different processing steps.
+   As for the cloud data warehouse, I would consider using Snowflake or Amazon Redshift, which are designed to handle large volumes of data and provide scalability, 
+   performance, and fault tolerance. These cloud data warehouses can efficiently ingest and store large datasets, and provide powerful querying and analytics capabilities 
+   for data processing at scale. If further data transformation is needed, I would consider using DBT (Data Build Tool) for ELT (Extract, Load, Transform) purposes. 
+   DBT provides a powerful and flexible way to transform data in a scalable manner and allows for versioning and testing of data transformations, making it suitable for large datasets.
 
-    For processing Parquet files and JSON data, I would use a Parquet library such as Pyarrow in Python to read and extract the data from the Parquet files. Pyarrow provides efficient columnar storage and supports parallel processing, making it suitable for large datasets.
+   Another Idea I would think of using would be clickhouse, an open source column-oriented database management system that is capable of real-time generation of analytical
+   data reports using SQL queries. ClickHouse is known for its blazing fast performance, linear scalability, hardware efficiency, fault tolerance, and feature richness, 
+   which make it suitable for handling large datasets. ClickHouse can be used as a replacement for the previous PostgreSQL/MYSQL-based pipeline in several ways. 
+   First, ClickHouse can handle large volumes of data with ease, making it suitable for processing datasets that are 100 GB in size or larger. 
 
-    As for the cloud data warehouse, I would consider using Snowflake or Amazon Redshift, which are designed to handle large volumes of data and provide scalability, performance, and fault tolerance. These cloud data warehouses can efficiently ingest and store large datasets, and provide powerful querying and analytics capabilities for data processing at scale.
+     
+For ref:
+clickhouse: https://blog.cloudflare.com/http-analytics-for-6m-requests-per-second-using clickhouse/
+json: https://towardsdatascience.com/interactively-analyse-100gb-of-json-data-with-spark-e018f9436e76
 
-    If further data transformation is needed, I would consider using DBT (Data Build Tool) for ELT (Extract, Load, Transform) purposes. DBT provides a powerful and flexible way to transform data in a scalable manner and allows for versioning and testing of data transformations, making it suitable for large datasets.
+2.  we can use Amazon S3, a highly scalable and durable object storage service, for ingesting and storing the new data in JSON, CSV, and JSON formats. Amazon S3 can 
+    handle large volumes of data and supports various data formats, making it a suitable choice for handling the expected data volume. We can leverage AWS Glue, a 
+    fully managed ETL service, for data transformation tasks. AWS Glue provides serverless computing and workflow-based approaches for transforming data at scale. 
+    We can create Glue jobs or development endpoints to automatically transform the new data into the desired format for analysis, such as converting JSON to the Redshift table.
 
-	Another Idea I would think of using would be clickhouse, an open source column-oriented database management system that is capable of real-time generation of analytical
-	data reports using SQL queries. ClickHouse is known for its blazing fast performance, linear scalability, hardware efficiency, fault tolerance, and feature richness, which make it suitable
-	for handling large datasets. ClickHouse can be used as a replacement for the previous PostgreSQL/MYSQL-based pipeline in several ways. First, ClickHouse can handle large volumes of data with ease, making it suitable for 
-	processing datasets that are 100 GB in size or larger. 
-
-   
-    
-    For ref:
-    clickhouse: https://blog.cloudflare.com/http-analytics-for-6m-requests-per-second-using clickhouse/
-    json: https://towardsdatascience.com/interactively-analyse-100gb-of-json-data-with-spark-e018f9436e76
-
-2.  we can use Amazon S3, a highly scalable and durable object storage service, for ingesting and storing the new data in JSON, CSV, and JSON formats. Amazon S3 can handle large volumes of data and supports various data formats, making it a  	  suitable choice for handling the expected data volume.
-
-	We can leverage AWS Glue, a fully managed ETL service, for data transformation tasks. AWS Glue provides serverless computing and workflow-based approaches for transforming data at scale. We can create Glue jobs or development endpoints to automatically transform the new data into the desired format for analysis, such as converting JSON to the Redshift table.
-
-	For data storage, we can continue to use Amazon S3 as the data volume increases. Amazon S3 provides virtually unlimited storage capacity and allows us to store and retrieve data quickly and cost-effectively. We can also configure Amazon S3 lifecycle policies to automatically transition data to lower-cost storage classes or expire data that is no longer needed.
-
-	To process the large-scale data, we can use Amazon EMR, a managed big data processing framework that supports distributed processing using Apache Spark, Apache Hadoop, and other popular data processing frameworks. We can configure EMR to automatically process the new data on a daily basis, using cluster configurations that are optimized for performance and cost-efficiency. EMR provides the scalability and flexibility needed to process large volumes of data efficiently.
+    For data storage, we can continue to use Amazon S3 as the data volume increases. Amazon S3 provides virtually unlimited storage capacity and allows us to store and retrieve 
+    data quickly and cost-effectively. We can also configure Amazon S3 lifecycle policies to automatically transition data to lower-cost storage classes or expire data that is no 
+    longer needed. To process the large-scale data, we can use Amazon EMR, a managed big data processing framework that supports distributed processing using Apache Spark, Apache Hadoop, 
+    and other popular data processing frameworks. We can configure EMR to automatically process the new data on a daily basis, using cluster configurations that are optimized for performance 
+    and cost-efficiency. EMR provides the scalability and flexibility needed to process large volumes of data efficiently.
 
 3.  To deploy this solution to a production environment, we can follow the steps below:
 
-	Provision and configure AWS services: Set up Amazon S3, AWS Glue, and Amazon EMR in the production environment. This involves creating the necessary buckets, configuring access policies, setting up AWS Glue connections and development endpoints, and configuring EMR cluster configurations optimized for performance and cost-efficiency.
+Provision and configure AWS services: Set up Amazon S3, AWS Glue, and Amazon EMR in the production environment. This involves creating the necessary buckets, configuring access
+policies, setting up AWS Glue connections and development endpoints, and configuring EMR cluster configurations optimized for performance and cost-efficiency.
 
-	Deploy and configure Glue jobs: Create Glue jobs for data transformation tasks, such as converting JSON to CSV or vice versa, and configure them with the appropriate input and output connections. Glue jobs can be written in Python or Scala, and we can use Glue's built-in job authoring features or bring our own custom code.
+Deploy and configure Glue jobs: Create Glue jobs for data transformation tasks, such as converting JSON to CSV or vice versa, and configure them with the appropriate input and output 
+connections. Glue jobs can be written in Python or Scala, and we can use Glue's built-in job authoring features or bring our own custom code.
 
-	Automate data ingestion: Set up data ingestion from external sources, such as streaming data from external APIs or scheduled batch data uploads, into Amazon S3. This can be automated using AWS Glue crawlers, Lambda functions, or other data ingestion tools, depending on the data sources and requirements.
+Automate data ingestion: Set up data ingestion from external sources, such as streaming data from external APIs or scheduled batch data uploads, into Amazon S3. This can be automated 
+using AWS Glue crawlers, Lambda functions, or other data ingestion tools, depending on the data sources and requirements.
 
-	Monitor ongoing processes: Set up monitoring and logging for the deployed solution to ensure smooth operation and detect any issues or errors. AWS CloudWatch can be used to monitor Glue job executions, EMR cluster performance, and S3 object access logs, among other things. CloudTrail can also be enabled to capture API activity for auditing and troubleshooting purposes.
+Monitor ongoing processes: Set up monitoring and logging for the deployed solution to ensure smooth operation and detect any issues or errors. AWS CloudWatch can be used to monitor 
+Glue job executions, EMR cluster performance, and S3 object access logs, among other things. CloudTrail can also be enabled to capture API activity for auditing and troubleshooting purposes.
 
-	Testing and optimization: Conduct thorough testing of the deployed solution in the production environment to identify and fix any issues or performance bottlenecks. Optimize the solution for cost and performance by monitoring and analyzing resource utilization and making necessary adjustments to configurations.
+Testing and optimization: Conduct thorough testing of the deployed solution in the production environment to identify and fix any issues or performance bottlenecks. Optimize the solution for 
+cost and performance by monitoring and analyzing resource utilization and making necessary adjustments to configurations.
 
-	CICD: Implement a continuous integration and deployment (CI/CD) pipeline to automate the deployment process and ensure consistent and reliable deployments of updates and changes to the solution. This can involve using tools such as AWS CloudFormation, AWS CodePipeline, and AWS CodeDeploy to manage 
+CICD: Implement a continuous integration and deployment (CI/CD) pipeline to automate the deployment process and ensure consistent and reliable deployments of updates and changes to the solution. 
+This can involve using tools such as AWS CloudFormation, AWS CodePipeline, and AWS CodeDeploy to manage 
